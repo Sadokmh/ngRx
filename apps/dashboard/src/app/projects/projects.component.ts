@@ -4,6 +4,7 @@ import { Customer, Project, ProjectsService, NotificationsService, CustomersServ
 import { select, Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
 import { CreateProject, DeleteProject, LoadProject, UpdateProject } from 'libs/core-data/src/lib/state/projects/projects.actions';
+import { selectAllProjects } from 'libs/core-data/src/lib/state/projects/projects.reducer';
 
 const emptyProject: Project = {
   id: null,
@@ -30,11 +31,7 @@ export class ProjectsComponent implements OnInit {
     private store: Store<ProjectsState>,
     private ns: NotificationsService) { 
       
-      this.projects$ = this.store.pipe(
-        select('projects'),
-        map((data) => data.entities),
-        map((data) => Object.keys(data).map(key => data[key]))
-        );
+      this.projects$ = this.store.pipe(select(selectAllProjects));
 
     }
 
@@ -62,7 +59,7 @@ export class ProjectsComponent implements OnInit {
 
   getProjects() {
     //this.projects$ = this.projectsService.all();
-    this.store.dispatch(new LoadProject(initialProjects));
+    this.store.dispatch(new LoadProject());
   }
 
   saveProject(project) {

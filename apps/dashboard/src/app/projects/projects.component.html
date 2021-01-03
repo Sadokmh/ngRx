@@ -7,7 +7,7 @@
     >
     </app-projects-list>
   </div>
-
+  <pre>{{ projects$ | async | json }}</pre>
   <div class="col-50">
     <app-project-details
       [project]="currentProject"
