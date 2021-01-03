@@ -1,8 +1,9 @@
 import { Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
-import { Customer, Project, ProjectsService, NotificationsService, CustomersService, ProjectsState } from '@workshop/core-data';
+import { Customer, Project, ProjectsService, NotificationsService, CustomersService, ProjectsState, initialProjects } from '@workshop/core-data';
 import { select, Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
+import { CreateProject, DeleteProject, LoadProject, UpdateProject } from 'libs/core-data/src/lib/state/projects/projects.actions';
 
 const emptyProject: Project = {
   id: null,
@@ -31,7 +32,8 @@ export class ProjectsComponent implements OnInit {
       
       this.projects$ = this.store.pipe(
         select('projects'),
-        map((projectsState) => projectsState.projects)
+        map((data) => data.entities),
+        map((data) => Object.keys(data).map(key => data[key]))
         );
 
     }
@@ -60,6 +62,7 @@ export class ProjectsComponent implements OnInit {
 
   getProjects() {
     //this.projects$ = this.projectsService.all();
+    this.store.dispatch(new LoadProject(initialProjects));
   }
 
   saveProject(project) {
@@ -71,7 +74,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   createProject(project) {
-    this.store.dispatch({type: 'create', payload: project});
+    this.store.dispatch(new CreateProject(project));
 
 
     // these will go away
@@ -80,13 +83,13 @@ export class ProjectsComponent implements OnInit {
   }
 
   updateProject(project) {
-    this.store.dispatch({type: 'update', payload: project});
+    this.store.dispatch(new UpdateProject(project));
     this.ns.emit('Project saved!');
     this.resetCurrentProject();
   }
 
   deleteProject(project) {
-    this.store.dispatch({type: 'delete', payload: project});
+    this.store.dispatch(new DeleteProject(project));
     this.projectsService.delete(project)
     this.ns.emit('Project deleted!');
     this.resetCurrentProject();    
