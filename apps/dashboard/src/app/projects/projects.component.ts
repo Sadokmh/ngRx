@@ -1,19 +1,11 @@
 import { Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
-import { Customer, Project, ProjectsService, NotificationsService, CustomersService, ProjectsState, initialProjects } from '@workshop/core-data';
+import { Customer, Project, ProjectsService, NotificationsService, CustomersService, ProjectsState, initialProjects, selectAllProjects, selectCurrentProject } from '@workshop/core-data';
 import { select, Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
-import { CreateProject, DeleteProject, LoadProject, UpdateProject } from 'libs/core-data/src/lib/state/projects/projects.actions';
-import { selectAllProjects } from 'libs/core-data/src/lib/state/projects/projects.reducer';
+import { CreateProject, DeleteProject, LoadProject, SelectProject, UpdateProject } from 'libs/core-data/src/lib/state/projects/projects.actions';
 
-const emptyProject: Project = {
-  id: null,
-  title: '',
-  details: '',
-  percentComplete: 0,
-  approved: false,
-  customerId: null
-}
+
 
 @Component({
   selector: 'app-projects',
@@ -23,7 +15,8 @@ const emptyProject: Project = {
 export class ProjectsComponent implements OnInit {
   projects$: Observable<Project[]>;
   customers$: Observable<Customer[]>;
-  currentProject: Project;
+  currentProject$: Observable<Project>;
+
 
   constructor(
     private projectsService: ProjectsService,
@@ -32,7 +25,7 @@ export class ProjectsComponent implements OnInit {
     private ns: NotificationsService) { 
       
       this.projects$ = this.store.pipe(select(selectAllProjects));
-
+      this.currentProject$ = this.store.pipe(select(selectCurrentProject));
     }
 
   ngOnInit() {
@@ -42,11 +35,11 @@ export class ProjectsComponent implements OnInit {
   }
 
   resetCurrentProject() {
-    this.currentProject = emptyProject;
+    this.store.dispatch(new SelectProject(null));
   }
 
   selectProject(project) {
-    this.currentProject = project;
+    this.store.dispatch(new SelectProject(project.id));
   }
 
   cancel(project) {

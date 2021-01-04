@@ -1,4 +1,3 @@
-import { act } from '@ngrx/effects';
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { ok } from 'assert';
 import { Project } from './../../projects/project.model';
@@ -47,7 +46,7 @@ const deleteProject = (projects, project) => projects.filter(w => project.id !==
 
 
 export interface ProjectsState extends EntityState<Project> {
-  selectedProject: string | null;
+  selectedProjectId: string | null;
 }
 
 
@@ -57,7 +56,7 @@ export const adapter: EntityAdapter<Project> = createEntityAdapter<Project>();
 // define the initial state
 
 export const initialState: ProjectsState = adapter.getInitialState({
-  selectedProject: null
+  selectedProjectId: null
 })
 
 // export const initialState: ProjectsState = {
@@ -91,7 +90,7 @@ export function projectsReducer(state = initialState, action) {
 
 // selectors
 
-export const getSelectedProjectId = (state: ProjectsState) => state.selectedProject;
+export const getSelectedProjectId = (state: ProjectsState) => state.selectedProjectId;
 
 const { selectIds, selectEntities, selectAll } = adapter.getSelectors();
 
